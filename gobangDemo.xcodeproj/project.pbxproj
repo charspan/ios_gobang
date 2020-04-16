@@ -16,6 +16,9 @@
 		943FE6E82445FBB600173520 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 943FE6E72445FBB600173520 /* main.m */; };
 		943FE6F22445FBB600173520 /* gobangDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 943FE6F12445FBB600173520 /* gobangDemoTests.m */; };
 		943FE6FD2445FBB700173520 /* gobangDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 943FE6FC2445FBB700173520 /* gobangDemoUITests.m */; };
+		943FE70F2445FCBC00173520 /* GobangView.m in Sources */ = {isa = PBXBuildFile; fileRef = 943FE70E2445FCBC00173520 /* GobangView.m */; };
+		94BAC52924486A10002BB8FF /* GobangPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 94BAC52824486A10002BB8FF /* GobangPoint.m */; };
+		94F0BC63244766FD00F9B897 /* GobangAI.m in Sources */ = {isa = PBXBuildFile; fileRef = 94F0BC62244766FD00F9B897 /* GobangAI.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +57,12 @@
 		943FE6F82445FBB700173520 /* gobangDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = gobangDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		943FE6FC2445FBB700173520 /* gobangDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gobangDemoUITests.m; sourceTree = "<group>"; };
 		943FE6FE2445FBB700173520 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		943FE70D2445FCBC00173520 /* GobangView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GobangView.h; sourceTree = "<group>"; };
+		943FE70E2445FCBC00173520 /* GobangView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GobangView.m; sourceTree = "<group>"; };
+		94BAC52724486A10002BB8FF /* GobangPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GobangPoint.h; sourceTree = "<group>"; };
+		94BAC52824486A10002BB8FF /* GobangPoint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GobangPoint.m; sourceTree = "<group>"; };
+		94F0BC61244766FD00F9B897 /* GobangAI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GobangAI.h; sourceTree = "<group>"; };
+		94F0BC62244766FD00F9B897 /* GobangAI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GobangAI.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +124,12 @@
 				943FE6E32445FBB600173520 /* LaunchScreen.storyboard */,
 				943FE6E62445FBB600173520 /* Info.plist */,
 				943FE6E72445FBB600173520 /* main.m */,
+				943FE70D2445FCBC00173520 /* GobangView.h */,
+				943FE70E2445FCBC00173520 /* GobangView.m */,
+				94F0BC61244766FD00F9B897 /* GobangAI.h */,
+				94F0BC62244766FD00F9B897 /* GobangAI.m */,
+				94BAC52724486A10002BB8FF /* GobangPoint.h */,
+				94BAC52824486A10002BB8FF /* GobangPoint.m */,
 			);
 			path = gobangDemo;
 			sourceTree = "<group>";
@@ -269,7 +284,10 @@
 			files = (
 				943FE6DD2445FBB400173520 /* ViewController.m in Sources */,
 				943FE6D72445FBB400173520 /* AppDelegate.m in Sources */,
+				943FE70F2445FCBC00173520 /* GobangView.m in Sources */,
+				94F0BC63244766FD00F9B897 /* GobangAI.m in Sources */,
 				943FE6E82445FBB600173520 /* main.m in Sources */,
+				94BAC52924486A10002BB8FF /* GobangPoint.m in Sources */,
 				943FE6DA2445FBB400173520 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
