@@ -35,22 +35,22 @@ const NSInteger margin = 10;
 //    gobandView.backgroundColor = backgroundColor;
     [self.view addSubview:self.gobangView];
     
-    self.maskView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    [self.view addSubview:self.maskView];
-    self.maskView.image = [UIImage imageNamed:@"launch"];
-    self.maskView.contentMode = UIViewContentModeScaleAspectFill;
-    self.maskView.userInteractionEnabled = YES;
-    
-    self.startButton = [[UIButton alloc] initWithFrame:CGRectMake(100, 350, 86, 25)];
-    [self.maskView addSubview:self.startButton];
-    [self.startButton setBackgroundImage:[UIImage imageNamed:@"start"] forState:UIControlStateNormal];
-    [self.startButton addTarget:self action:@selector(startButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    
-    
-    self.stopButton = [[UIButton alloc] initWithFrame:CGRectMake(200, 350, 86, 25)];
-    [self.maskView addSubview:self.stopButton];
-    [self.stopButton setBackgroundImage:[UIImage imageNamed:@"stop"] forState:UIControlStateNormal];
-    [self.stopButton addTarget:self action:@selector(resetButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+//    self.maskView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//    [self.view addSubview:self.maskView];
+//    self.maskView.image = [UIImage imageNamed:@"launch"];
+//    self.maskView.contentMode = UIViewContentModeScaleAspectFill;
+//    self.maskView.userInteractionEnabled = YES;
+//    
+//    self.startButton = [[UIButton alloc] initWithFrame:CGRectMake(100, 350, 86, 25)];
+//    [self.maskView addSubview:self.startButton];
+//    [self.startButton setBackgroundImage:[UIImage imageNamed:@"start"] forState:UIControlStateNormal];
+//    [self.startButton addTarget:self action:@selector(startButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+//    
+//    
+//    self.stopButton = [[UIButton alloc] initWithFrame:CGRectMake(200, 350, 86, 25)];
+//    [self.maskView addSubview:self.stopButton];
+//    [self.stopButton setBackgroundImage:[UIImage imageNamed:@"stop"] forState:UIControlStateNormal];
+//    [self.stopButton addTarget:self action:@selector(resetButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)resetButtonPressed:(UIButton *)button {

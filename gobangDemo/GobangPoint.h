@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 落子纵坐标
 @property (nonatomic, assign) NSInteger y;
 
-- (id)initPointWith:(NSInteger)x y:(NSInteger)y;
+- (id)initPointWithX:(NSInteger)x y:(NSInteger)y;
 
 @end
 

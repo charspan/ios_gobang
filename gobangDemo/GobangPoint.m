@@ -10,7 +10,7 @@
 
 @implementation GobangPoint
 
-- (id)initPointWith:(NSInteger)x y:(NSInteger)y {
+- (id)initPointWithX:(NSInteger)x y:(NSInteger)y {
     self = [self init];
     if (self) {
         self.x = x;
