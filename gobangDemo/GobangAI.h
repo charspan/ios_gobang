@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, OccupyType) {
 @property (nonatomic, assign) OccupyType myType;
 // 初始化机器人，传入棋盘数据
 - (id)initWithArr:(NSMutableArray *)places;
-// 从xType类型进行思考：从pp点开始上下左右寻找是否存在一个空点，落子后形成num连珠
-- (BOOL)isStepEmergent:(GobangPoint *)pp Num:(int)num type:(OccupyType)xType;
+// 以type的角度观察场上形势，从（startX,startXY）点开始遍历，寻找是否有threshold连珠并且落子后可以形成num子连珠的点
+- (GobangPoint *)nextStep:(OccupyType)type num:(int)num thre:(int)threshold x:(int)startX y:(int)startY;
 
 @end
 

@@ -261,6 +261,10 @@ const CGFloat lineWidth = 0.5;
 
 // 在p点落子
 - (BOOL)move:(GobangPoint *)point {
+    // 如果point点不在棋盘上，返回落子失败
+    if (point.x < 0 || point.x >= piecesNumber + 2 || point.y < 0 || point.y >= piecesNumber + 2) {
+        return false;
+    }
     // 获取第x竖线的落子情况
     NSMutableArray *xLineStatus = self.places[point.x];
     // 获取第x竖线第y横线交点的落子情况（坐标(x,y)的落子情况）
@@ -331,7 +335,7 @@ const CGFloat lineWidth = 0.5;
     } completion:^(BOOL finished) {
         // 标签显示1秒后，0.5秒隐藏标签
         // UIViewAnimationOptionCurveEaseInOut 时间曲线函数，缓入缓出，中间快，其他可选值：https://www.cnblogs.com/xiaobajiu/p/4084747.html
-        [UIView animateWithDuration:0.5 delay:1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:0.5 delay:0.5 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             label.alpha = 0;
         } completion:^(BOOL finished) {
             // 将提示标签移除
