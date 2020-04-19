@@ -19,16 +19,7 @@ typedef NS_ENUM(NSInteger, OccupyType) {
     OccupyTypeUnknown // 未知点
 };
 
-@interface KWPointData : NSObject
-
-@property (nonatomic, strong) GobangPoint *p;
-@property (nonatomic, assign) int count;
-
-- (id)initWithPoint:(GobangPoint *)point count:(int)count;
-
-@end
-
-@interface KWOmni : NSObject
+@interface Robot : NSObject
 
 // 当前所有落子点的信息（用户点，AI点，空点）
 @property (nonatomic, strong) NSMutableArray *curBoard;
@@ -36,8 +27,8 @@ typedef NS_ENUM(NSInteger, OccupyType) {
 @property (nonatomic, assign) OccupyType oppoType;
 // AI类型（AI角度进行思考）
 @property (nonatomic, assign) OccupyType myType;
-
-- (id)initWithArr:(NSMutableArray *)arr opp:(OccupyType)opp my:(OccupyType)my;
+// 初始化机器人，传入棋盘数据
+- (id)initWithArr:(NSMutableArray *)places;
 // 从xType类型进行思考：从pp点开始上下左右寻找是否存在一个空点，落子后形成num连珠
 - (BOOL)isStepEmergent:(GobangPoint *)pp Num:(int)num type:(OccupyType)xType;
 
@@ -45,8 +36,8 @@ typedef NS_ENUM(NSInteger, OccupyType) {
 
 @interface GobangAI : NSObject
 
-+ (GobangPoint *)geablog:(NSMutableArray *)board type:(OccupyType)type;
-+ (GobangPoint *)SeraphTheGreat:(NSMutableArray *)board type:(OccupyType)type;
+// 寻找AI的最优落子点
++ (GobangPoint *)searchBestPoint:(NSMutableArray *)places;
 
 @end
 

@@ -10,47 +10,14 @@
 
 static NSInteger kBoardSize = 14;
 
-@implementation KWPointData
+@implementation Robot
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        self.p = [[GobangPoint alloc] initPointWithX:-1 y:-1];
-        self.count = 0;
-    }
-    return self;
-}
-
-- (id)initWithPoint:(GobangPoint *)point count:(int)ncount {
+- (id)initWithArr:(NSMutableArray *)places {
     self = [self init];
     if (self) {
-        self.p = [[GobangPoint alloc] initPointWithX:-1 y:-1];
-        self.p.x = point.x;
-        self.p.y = point.y;
-        self.count = ncount;
-    }
-    return self;
-}
-
-@end
-
-@implementation KWOmni
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        self.oppoType = OccupyTypeEmpty;
-        self.myType = OccupyTypeEmpty;
-    }
-    return self;
-}
-
-- (id)initWithArr:(NSMutableArray *)arr opp:(OccupyType)opp my:(OccupyType)my {
-    self = [self init];
-    if (self) {
-        self.curBoard = arr;
-        self.oppoType = opp;
-        self.myType = my;
+        self.curBoard = places;
+        self.oppoType = OccupyTypeUser;
+        self.myType = OccupyTypeAI;
     }
     return self;
 }
@@ -166,8 +133,17 @@ static NSInteger kBoardSize = 14;
     GobangPoint *rPoint = [self rightDown:search type:type num:num thre:threshold];
     // 左下可能形成num连珠的点
     GobangPoint *lPoint = [self leftDown:search type:type num:num thre:threshold];
-    if (hPoint.x != -1){
-        NSLog(@"形成%d连珠 %d %d", num, hPoint.x, hPoint.y);
+    if (hPoint.x != 0) {
+        NSLog(@"type=%d,形成%d连珠 %d %d", (int)type, num, (int)hPoint.x, (int)hPoint.y);
+    }
+    if (vPoint.x != 0) {
+        NSLog(@"type=%d,形成%d连珠 %d %d", (int)type, num, (int)vPoint.x, (int)vPoint.y);
+    }
+    if (rPoint.x != 0) {
+        NSLog(@"type=%d,形成%d连珠 %d %d", (int)type, num, (int)rPoint.x, (int)rPoint.y);
+    }
+    if (lPoint.x != 0) {
+        NSLog(@"type=%d,形成%d连珠 %d %d", (int)type, num, (int)lPoint.x, (int)lPoint.y);
     }
     // 是否五子连珠
     if(num == 5) {
@@ -395,7 +371,7 @@ static NSInteger kBoardSize = 14;
     return [self leftDown:[self getNextPoint:point] type:type num:num thre:threshold];
 }
 
-// 从左到右，从上往下获取下一个点
+// 从左到右，从上往下获取下一个点(最终会超出棋盘范围，临界点是(0, kBoardSize+2))
 - (GobangPoint *)getNextPoint:(GobangPoint *)point {
     // 判断当前行有没有遍历完
     if(point.x + 1 < kBoardSize + 2) {
@@ -410,54 +386,32 @@ static NSInteger kBoardSize = 14;
 
 @implementation GobangAI
 
-+ (GobangPoint *)geablog:(NSMutableArray *)board type:(OccupyType)type {
-    GobangPoint *calibur = [[self class] SeraphTheGreat:board type:type];
-    return calibur;
-}
-
-+ (GobangPoint *)SeraphTheGreat:(NSMutableArray *)board type:(OccupyType)type {
++ (GobangPoint *)searchBestPoint:(NSMutableArray *)places {
     // 初始化KWOmni
-    KWOmni *omniknight;
-    if(type == OccupyTypeUser) {
-        // 初始化用户落子点阵（对手为AI）
-        omniknight = [[KWOmni alloc] initWithArr:board opp:OccupyTypeAI my:OccupyTypeUser];
-    } else {
-        // 初始化AI落子点阵（对手为用户）
-        omniknight = [[KWOmni alloc] initWithArr:board opp:OccupyTypeUser my:OccupyTypeAI];
+    Robot *robot = [[Robot alloc] initWithArr:places];
+    // 申明最优的落子点
+    GobangPoint *bestPoint;
+    // 定义连珠数量
+    int num = 5;
+    // 从能实现五连珠一直找到能实现2连珠的落子点
+    while(num > 1) {
+        // 在AI的角度寻找能实现num连珠的点
+        bestPoint = [robot nextStep:robot.myType num:num thre:num - 1 x:0 y:0];
+        // 找到了可用的最优点，返回该点
+        if([robot checkPoint:bestPoint]) {
+               return bestPoint;
+        }
+        // 在用户的角度寻找能实现num连珠的点
+        bestPoint = [robot nextStep:robot.oppoType num:num thre:num - 1 x:0 y:0];
+        // 找到了可用的最优点，返回该点
+        if([robot checkPoint:bestPoint]) {
+            NSLog(@"对手形成%d子连珠", num);
+            return bestPoint;
+        }
+        num--;
     }
-    GobangPoint *calibur = [omniknight nextStep:omniknight.myType num:5 thre:4 x:0 y:0];
-    if([omniknight checkPoint:calibur]) {
-        return calibur;
-    }
-    calibur = [omniknight nextStep:omniknight.oppoType num:5 thre:4 x:0 y:0];
-    if ([omniknight checkPoint:calibur]) {
-        return calibur;
-    }
-    calibur = [omniknight nextStep:omniknight.myType num:4 thre:3 x:0 y:0];
-    if([omniknight checkPoint:calibur]) {
-        return calibur;
-    }
-    calibur = [omniknight nextStep:omniknight.oppoType num:4 thre:3 x:0 y:0];
-    if ([omniknight checkPoint:calibur]) {
-        NSLog(@"对手形成4子连珠");
-        return calibur;
-    }
-    calibur = [omniknight nextStep:omniknight.myType num:3 thre:2 x:0 y:0];
-    if([omniknight checkPoint:calibur])
-        return calibur;
-    calibur = [omniknight nextStep:omniknight.myType num:2 thre:1 x:0 y:0];
-    if([omniknight checkPoint:calibur])
-        return calibur;
-    calibur = [omniknight nextStep:omniknight.oppoType num:3 thre:2 x:0 y:0];
-    if ([omniknight checkPoint:calibur]) {
-        return calibur;
-    }
-    calibur = [omniknight nextStep:omniknight.oppoType num:2 thre:1 x:0 y:0];
-    if ([omniknight checkPoint:calibur]) {
-        return calibur;
-    }
-    //  如果什么都没有则返回不可用的点
-    GobangPoint *sad = [[GobangPoint alloc] initPointWithX:(kBoardSize + 1) / 2 y:(kBoardSize + 1) /2];
+    // 如果什么都没有则返回不可用的点
+    GobangPoint *sad = [[GobangPoint alloc] init];
     return sad;
 }
 

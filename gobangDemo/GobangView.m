@@ -142,9 +142,9 @@ const CGFloat lineWidth = 0.5;
         return;
     }
     // 初始化AI落子点
-    clickPoint = [GobangAI geablog:self.places type:OccupyTypeAI];
+   GobangPoint *robotPoint = [GobangAI searchBestPoint:self.places];
     // 判断AI落子是否失败
-    if ([self move:clickPoint] == FALSE) {
+    if ([self move:robotPoint] == FALSE) {
         [self win:OccupyTypeUser];
         return;
     }
