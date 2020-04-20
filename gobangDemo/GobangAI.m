@@ -220,16 +220,20 @@ static NSInteger kBoardSize = 14;
         // 不可用返回两端没有可用的落子点
         return FALSE;
     }
-    // 横向检查
-    GobangPoint *startPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
-    if (![self checkPoint:startPoint]) {
+    // 零点特殊处理
+    if (point.x == 0 && point.y == 0) {
         return TRUE;
     }
+    // 横向检查
+    GobangPoint *startPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y];
+    // 如果相邻的落子点不可用
+    if (![self checkPoint:startPoint]) {
+        startPoint.x = point.x;
+    }
     GobangPoint *endPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
+    // 如果相邻的落子点不可用
     if (![self checkPoint:endPoint]) {
-        return TRUE;
+        endPoint.x = point.x;
     }
     // 获取两个端点(端点为敌方点或者空点)
     for (int i = 0; startPoint.x >= 0 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
@@ -247,14 +251,12 @@ static NSInteger kBoardSize = 14;
     }
     // 纵向检查
     startPoint = [[GobangPoint alloc]initPointWithX:point.x y:point.y - 1];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
     if (![self checkPoint:startPoint]) {
-        return TRUE;
+        startPoint.y = point.y;
     }
     endPoint = [[GobangPoint alloc]initPointWithX:point.x y:point.y + 1];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
     if (![self checkPoint:endPoint]) {
-        return TRUE;
+        startPoint.y = point.y;
     }
     // 获取两个端点(端点为敌方点或者空点)
     for (int i = 0; startPoint.y >= 0 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
@@ -272,14 +274,14 @@ static NSInteger kBoardSize = 14;
     }
     // 右上左下检查
     startPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y - 1];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
     if (![self checkPoint:startPoint]) {
-        return TRUE;
+        startPoint.x = point.x;
+        startPoint.y = point.y;
     }
     endPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y + 1];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
     if (![self checkPoint:endPoint]) {
-        return TRUE;
+        endPoint.x = point.x;
+        endPoint.y = point.y;
     }
     // 获取两个端点(端点为敌方点或者空点)
     for (int i = 0; startPoint.y >= 0 && startPoint.x < kBoardSize + 2 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
@@ -299,14 +301,14 @@ static NSInteger kBoardSize = 14;
     }
     // 左上右下检查
     startPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y - 1];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
     if (![self checkPoint:startPoint]) {
-        return TRUE;
+        startPoint.x = point.x;
+        startPoint.y = point.y;
     }
     endPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y + 1];
-    // 如果相邻的落子点不可用，直接抢占可能的威胁点
     if (![self checkPoint:endPoint]) {
-        return TRUE;
+        endPoint.x = point.x;
+        endPoint.y = point.y;
     }
     // 获取两个端点(端点为敌方点或者空点)
     for (int i = 0; startPoint.x >= 0 && startPoint.y >= 0 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
@@ -378,7 +380,6 @@ static NSInteger kBoardSize = 14;
             //
             while([self checkPoint:horizontalPoint] && ![self isStepEmergent:horizontalPoint Num:num type:type]) {
                 horizontalPoint = [self horizontal:[self getNextPoint:horizontalPoint] type:type num:num thre:threshold];
-                NSLog(@"horizontal");
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
             if([self isStepEmergent:tempPoint Num:num type:type]) {
@@ -394,7 +395,6 @@ static NSInteger kBoardSize = 14;
         if (tempPoint.y < kBoardSize + 2) {
             while([self checkPoint:verticalPoint] && ![self isStepEmergent:verticalPoint Num:num type:type]) {
                 verticalPoint = [self vertical:[self getNextPoint:verticalPoint] type:type num:num thre:threshold];
-                 NSLog(@"vertical");
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
             if([self isStepEmergent:verticalPoint Num:num type:type]) {
