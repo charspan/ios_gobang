@@ -19,6 +19,8 @@ const NSInteger margin = 10;
 @property (nonatomic, strong) UIButton *stopButton;
 @property (nonatomic, strong) UIButton *resetButton;
 @property (nonatomic, strong) GobangView *gobangView;
+// 游戏标题
+@property(nonatomic, strong) UILabel *titleLable;
 
 @end
 
@@ -28,6 +30,11 @@ const NSInteger margin = 10;
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 //    UIColor *backgroundColor = [UIColor colorWithRed:230.0 / 255.0 green:192.0 / 255.0 blue:148.0 /255.0 alpha:1.0];
+    self.titleLable = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 200 / 2, 50, 200, 100)];
+    self.titleLable.text = @"五 子 棋 大 战";
+    [self.titleLable setFont:[UIFont systemFontOfSize: 40]];
+    self.titleLable.adjustsFontSizeToFitWidth = true;
+    [self.view addSubview:self.titleLable];
     // 设置棋盘边长 = 屏幕宽度 - 左右边距
     float squareLength =  self.view.frame.size.width - 2 * margin;
     // 设置屏幕居中显示
@@ -35,22 +42,22 @@ const NSInteger margin = 10;
 //    gobandView.backgroundColor = backgroundColor;
     [self.view addSubview:self.gobangView];
     
-//    self.maskView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//    [self.view addSubview:self.maskView];
-//    self.maskView.image = [UIImage imageNamed:@"launch"];
-//    self.maskView.contentMode = UIViewContentModeScaleAspectFill;
-//    self.maskView.userInteractionEnabled = YES;
-//    
-//    self.startButton = [[UIButton alloc] initWithFrame:CGRectMake(100, 350, 86, 25)];
-//    [self.maskView addSubview:self.startButton];
-//    [self.startButton setBackgroundImage:[UIImage imageNamed:@"start"] forState:UIControlStateNormal];
-//    [self.startButton addTarget:self action:@selector(startButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    
-//    self.stopButton = [[UIButton alloc] initWithFrame:CGRectMake(200, 350, 86, 25)];
-//    [self.maskView addSubview:self.stopButton];
-//    [self.stopButton setBackgroundImage:[UIImage imageNamed:@"stop"] forState:UIControlStateNormal];
-//    [self.stopButton addTarget:self action:@selector(resetButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.maskView = [[UIImageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    [self.view addSubview:self.maskView];
+    self.maskView.image = [UIImage imageNamed:@"launch"];
+    self.maskView.contentMode = UIViewContentModeScaleAspectFill;
+    self.maskView.userInteractionEnabled = YES;
+    
+    self.startButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 3 - 86 / 2, self.view.frame.size.height / 2 - 120, 86, 25)];
+    [self.maskView addSubview:self.startButton];
+    [self.startButton setBackgroundImage:[UIImage imageNamed:@"start"] forState:UIControlStateNormal];
+    [self.startButton addTarget:self action:@selector(startButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    self.stopButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 3 + 86, self.view.frame.size.height / 2 - 120, 86, 25)];
+    [self.maskView addSubview:self.stopButton];
+    [self.stopButton setBackgroundImage:[UIImage imageNamed:@"stop"] forState:UIControlStateNormal];
+    [self.stopButton addTarget:self action:@selector(resetButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)resetButtonPressed:(UIButton *)button {

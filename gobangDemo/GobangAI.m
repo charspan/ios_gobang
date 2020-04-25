@@ -8,7 +8,7 @@
 
 #import "GobangAI.h"
 
-static NSInteger kBoardSize = 14;
+static NSInteger piecesNumber = 14;
 
 @implementation Robot
 
@@ -25,7 +25,7 @@ static NSInteger kBoardSize = 14;
 // 检查落子点是否可用
 - (BOOL)checkPoint:(GobangPoint *)point {
     // 如果一个点的X Y 坐标都大于等于0且小于棋盘大小时才认为可用
-    if ((point.x >= 0 && point.x < kBoardSize + 2) && (point.y >= 0 && point.y < kBoardSize + 2)) {
+    if ((point.x >= 0 && point.x < piecesNumber + 2) && (point.y >= 0 && point.y < piecesNumber + 2)) {
         return YES;
     }
     return NO;
@@ -34,12 +34,12 @@ static NSInteger kBoardSize = 14;
 // 从左到右，从上往下获取下一个点(最终会超出棋盘范围，临界点是(0, kBoardSize+2))
 - (GobangPoint *)getNextPoint:(GobangPoint *)point {
     // 判断当前行有没有遍历完
-    if(point.x + 1 < kBoardSize + 2) {
+    if(point.x + 1 < piecesNumber + 2) {
         // 没有遍历完，返回当前行的下一个点
         return [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y];
     }
     // 遍历完了，返回下一行的第一个点
-    return [[GobangPoint alloc]initPointWithX:0 y:point.y+1];
+    return [[GobangPoint alloc]initPointWithX:0 y:point.y + 1];
 }
 
 // 以type的角度观察场上形势，从point点开始横向遍历，寻找是否有threshold连珠并且落子后可以形成num连珠的点
@@ -58,7 +58,7 @@ static NSInteger kBoardSize = 14;
         // 当前坐标
         NSInteger x = point.x + i, y = point.y;
         // 当前点是否可用
-        if (x < kBoardSize + 2) {
+        if (x < piecesNumber + 2) {
             // 判断下一个点是否也是type类型
             if([self.curBoard[x][y] integerValue] == type) {
                 // 是，连珠数量加1
@@ -102,7 +102,7 @@ static NSInteger kBoardSize = 14;
         // 当前坐标
         NSInteger x = point.x, y = point.y + i;
         // 当前点是否可用
-        if (y < kBoardSize + 2) {
+        if (y < piecesNumber + 2) {
             // 判断下一个点是否也是type类型
             if([self.curBoard[x][y] integerValue] == type){
                 count++;
@@ -144,7 +144,7 @@ static NSInteger kBoardSize = 14;
         // 当前坐标
         NSInteger x = point.x + i,y = point.y + i;
         // 当前点是否可用
-        if ((point.x + i < kBoardSize + 2) && (point.y + i < kBoardSize + 2)) {
+        if ((point.x + i < piecesNumber + 2) && (point.y + i < piecesNumber + 2)) {
             // 判断下一个点是否也是type类型
             if(([self.curBoard[x][y] integerValue] == type)) {
                 count++;
@@ -186,7 +186,7 @@ static NSInteger kBoardSize = 14;
         // 当前坐标
         NSInteger x = point.x - i, y = point.y + i;
         // 当前点是否可用
-        if ((point.x - i >= 0) && (point.y + i < kBoardSize + 2)) {
+        if ((point.x - i >= 0) && (point.y + i < piecesNumber + 2)) {
             // 判断下一个点是否也是type类型
             if(([self.curBoard[x][y] integerValue] == type)) {
                 count++;
@@ -212,17 +212,12 @@ static NSInteger kBoardSize = 14;
     return [self leftDown:[self getNextPoint:point] type:type num:num thre:threshold];
 }
 
-// 从type类型进行思考,包含point点(可能的最优落子点)的num连珠两端是否都可落子
-- (BOOL)isStepEmergent:(GobangPoint *)point Num:(int)num type:(OccupyType)type {
-//    NSLog(@"isStepEmergent point(%d, %d) num = %d type = %d",(int)point.x,(int)point.y,num,(int)type);
+// 从type类型进行思考,横向上包含point点(可能的最优落子点)的num连珠两端是否都可落子
+- (BOOL)isHorizontalEmergent:(GobangPoint *)point Num:(int)num type:(OccupyType)type {
     // 判断当前点是否可用
     if (![self checkPoint:point]) {
         // 不可用返回两端没有可用的落子点
         return FALSE;
-    }
-    // 零点特殊处理
-    if (point.x == 0 && point.y == 0) {
-        return TRUE;
     }
     // 横向检查
     GobangPoint *startPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y];
@@ -239,22 +234,33 @@ static NSInteger kBoardSize = 14;
     for (int i = 0; startPoint.x >= 0 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
         startPoint.x = startPoint.x - 1;
     }
-    for (int i = 0; endPoint.x < kBoardSize + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
+    for (int i = 0; endPoint.x < piecesNumber + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
         endPoint.x = endPoint.x + 1;
     }
     // 判断端点是否在棋盘上且两点距离大于num
     if ([self checkPoint:startPoint] && [self checkPoint:endPoint] && endPoint.x - startPoint.x > num) {
-        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
-//            NSLog(@"endPoint(%d, %d),startPoint(%d, %d),",(int)endPoint.x,(int)endPoint.y,(int)startPoint.x,(int)startPoint.y);
+        // 判断两个端点是否可落子
+        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty
+            && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
             return TRUE;
         }
     }
+    return FALSE;
+}
+
+// 从type类型进行思考,竖向上包含point点(可能的最优落子点)的num连珠两端是否都可落子
+- (BOOL)isVerticalEmergent:(GobangPoint *)point Num:(int)num type:(OccupyType)type {
+    // 判断当前点是否可用
+    if (![self checkPoint:point]) {
+        // 不可用返回两端没有可用的落子点
+        return FALSE;
+    }
     // 纵向检查
-    startPoint = [[GobangPoint alloc]initPointWithX:point.x y:point.y - 1];
+    GobangPoint *startPoint = [[GobangPoint alloc]initPointWithX:point.x y:point.y - 1];
     if (![self checkPoint:startPoint]) {
         startPoint.y = point.y;
     }
-    endPoint = [[GobangPoint alloc]initPointWithX:point.x y:point.y + 1];
+    GobangPoint *endPoint = [[GobangPoint alloc]initPointWithX:point.x y:point.y + 1];
     if (![self checkPoint:endPoint]) {
         startPoint.y = point.y;
     }
@@ -262,50 +268,34 @@ static NSInteger kBoardSize = 14;
     for (int i = 0; startPoint.y >= 0 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
         startPoint.y = startPoint.y - 1;
     }
-    for (int i = 0; endPoint.y < kBoardSize + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
+    for (int i = 0; endPoint.y < piecesNumber + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
         endPoint.y = endPoint.y + 1;
     }
     // 判断端点是否在棋盘上且两点距离大于num
     if ([self checkPoint:startPoint] && [self checkPoint:endPoint] && endPoint.y - startPoint.y > num) {
-        // 判断端点是否都为空点
-        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
+        // 判断两个端点是否可落子
+        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty
+            && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
             return TRUE;
         }
     }
-    // 右上左下检查
-    startPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y - 1];
-    if (![self checkPoint:startPoint]) {
-        startPoint.x = point.x;
-        startPoint.y = point.y;
-    }
-    endPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y + 1];
-    if (![self checkPoint:endPoint]) {
-        endPoint.x = point.x;
-        endPoint.y = point.y;
-    }
-    // 获取两个端点(端点为敌方点或者空点)
-    for (int i = 0; startPoint.y >= 0 && startPoint.x < kBoardSize + 2 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
-        startPoint.x = startPoint.x + 1;
-        startPoint.y = startPoint.y - 1;
-    }
-    for (int i = 0; endPoint.x >= 0 && endPoint.y < kBoardSize + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
-        endPoint.x = endPoint.x - 1;
-        endPoint.y = endPoint.y + 1;
-    }
-    // 判断端点是否在棋盘上且两点距离大于num
-    if ([self checkPoint:startPoint] && [self checkPoint:endPoint] && endPoint.y - startPoint.y > num) {
-        // 判断端点是否都为空点
-        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
-            return TRUE;
-        }
+    return FALSE;
+}
+
+// 从type类型进行思考,左上右下上包含point点(可能的最优落子点)的num连珠两端是否都可落子
+- (BOOL)isRightDownEmergent:(GobangPoint *)point Num:(int)num type:(OccupyType)type {
+    // 判断当前点是否可用
+    if (![self checkPoint:point]) {
+        // 不可用返回两端没有可用的落子点
+        return FALSE;
     }
     // 左上右下检查
-    startPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y - 1];
+    GobangPoint *startPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y - 1];
     if (![self checkPoint:startPoint]) {
         startPoint.x = point.x;
         startPoint.y = point.y;
     }
-    endPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y + 1];
+    GobangPoint *endPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y + 1];
     if (![self checkPoint:endPoint]) {
         endPoint.x = point.x;
         endPoint.y = point.y;
@@ -315,14 +305,53 @@ static NSInteger kBoardSize = 14;
         startPoint.x = startPoint.x - 1;
         startPoint.y = startPoint.y - 1;
     }
-    for (int i = 0; endPoint.x < kBoardSize + 2 && endPoint.y < kBoardSize + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
+    for (int i = 0; endPoint.x < piecesNumber + 2 && endPoint.y < piecesNumber + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
         endPoint.x = endPoint.x + 1;
         endPoint.y = endPoint.y + 1;
     }
     // 判断端点是否在棋盘上且两点距离大于num
     if ([self checkPoint:startPoint] && [self checkPoint:endPoint] && endPoint.y - startPoint.y > num) {
-        // 判断端点是否都为空点
-        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
+        // 判断两个端点是否可落子
+        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty
+            && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+// 从type类型进行思考,右上左下上包含point点(可能的最优落子点)的num连珠两端是否都可落子
+- (BOOL)isLeftDownEmergent:(GobangPoint *)point Num:(int)num type:(OccupyType)type {
+    // 判断当前点是否可用
+    if (![self checkPoint:point]) {
+        // 不可用返回两端没有可用的落子点
+        return FALSE;
+    }
+    // 右上左下检查
+    GobangPoint *startPoint = [[GobangPoint alloc]initPointWithX:point.x + 1 y:point.y - 1];
+    if (![self checkPoint:startPoint]) {
+        startPoint.x = point.x;
+        startPoint.y = point.y;
+    }
+    GobangPoint *endPoint = [[GobangPoint alloc]initPointWithX:point.x - 1 y:point.y + 1];
+    if (![self checkPoint:endPoint]) {
+        endPoint.x = point.x;
+        endPoint.y = point.y;
+    }
+    // 获取两个端点(端点为敌方点或者空点)
+    for (int i = 0; startPoint.y >= 0 && startPoint.x < piecesNumber + 2 && [self.curBoard[startPoint.x][startPoint.y] integerValue] == type; i++) {
+        startPoint.x = startPoint.x + 1;
+        startPoint.y = startPoint.y - 1;
+    }
+    for (int i = 0; endPoint.x >= 0 && endPoint.y < piecesNumber + 2 && [self.curBoard[endPoint.x][endPoint.y] integerValue] == type; i++) {
+        endPoint.x = endPoint.x - 1;
+        endPoint.y = endPoint.y + 1;
+    }
+    // 判断端点是否在棋盘上且两点距离大于num
+    if ([self checkPoint:startPoint] && [self checkPoint:endPoint] && endPoint.y - startPoint.y > num) {
+        // 判断两个端点是否可落子
+        if ([self.curBoard[startPoint.x][startPoint.y] integerValue] == OccupyTypeEmpty
+            && [self.curBoard[endPoint.x][endPoint.y] integerValue] == OccupyTypeEmpty) {
             return TRUE;
         }
     }
@@ -342,16 +371,16 @@ static NSInteger kBoardSize = 14;
     GobangPoint *rightDownPoint = [self rightDown:search type:type num:num thre:threshold];
     // 左下可能形成num连珠的点
     GobangPoint *leftDownPoint = [self leftDown:search type:type num:num thre:threshold];
-    if (horizontalPoint.y < kBoardSize + 2) {
+    if (horizontalPoint.y < piecesNumber + 2) {
         NSLog(@"type=%d,在horizontalPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)horizontalPoint.x, (int)horizontalPoint.y,num);
     }
-    if (verticalPoint.y < kBoardSize + 2) {
+    if (verticalPoint.y < piecesNumber + 2) {
         NSLog(@"type=%d,在verticalPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)verticalPoint.x, (int)verticalPoint.y,num);
     }
-    if (rightDownPoint.y < kBoardSize + 2) {
+    if (rightDownPoint.y < piecesNumber + 2) {
         NSLog(@"type=%d,在rightDownPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)rightDownPoint.x, (int)rightDownPoint.y,num);
     }
-    if (leftDownPoint.y < kBoardSize + 2) {
+    if (leftDownPoint.y < piecesNumber + 2) {
         NSLog(@"type=%d,在leftDownPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)leftDownPoint.x, (int)leftDownPoint.y,num);
     }
     // 是否五子连珠
@@ -373,65 +402,48 @@ static NSInteger kBoardSize = 14;
             return leftDownPoint;
         }
     } else {
-        // 保存当前最优落子点(横向)
-        GobangPoint *tempPoint = [[GobangPoint alloc]initPointWithX:horizontalPoint.x y:horizontalPoint.y];
         // 当前落子点可用
-        if (tempPoint.y < kBoardSize + 2) {
-            //
-            while([self checkPoint:horizontalPoint] && ![self isStepEmergent:horizontalPoint Num:num type:type]) {
+        if (horizontalPoint.y < piecesNumber + 2) {
+            while([self checkPoint:horizontalPoint] && ![self isHorizontalEmergent:horizontalPoint Num:num type:type]) {
                 horizontalPoint = [self horizontal:[self getNextPoint:horizontalPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
-            if([self isStepEmergent:tempPoint Num:num type:type]) {
-                NSLog(@"horizontal type=%d,在tempPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
-                return tempPoint;
-            } else {
-                NSLog(@"horizontal type=%d,在tempPoint(%d,%d)点落子后形成%d连珠，但是两端不为空点 ",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
+            if([self isHorizontalEmergent:horizontalPoint Num:num type:type]) {
+                NSLog(@"type=%d,在horizontalPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)horizontalPoint.x, (int)horizontalPoint.y,num);
+                return horizontalPoint;
             }
         }
-        // 保存当前最优落子点(纵向)
-        tempPoint = [[GobangPoint alloc]initPointWithX:verticalPoint.x y:verticalPoint.y];
         // 当前落子点可用
-        if (tempPoint.y < kBoardSize + 2) {
-            while([self checkPoint:verticalPoint] && ![self isStepEmergent:verticalPoint Num:num type:type]) {
+        if (verticalPoint.y < piecesNumber + 2) {
+            while([self checkPoint:verticalPoint] && ![self isVerticalEmergent:verticalPoint Num:num type:type]) {
                 verticalPoint = [self vertical:[self getNextPoint:verticalPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
-            if([self isStepEmergent:verticalPoint Num:num type:type]) {
-                NSLog(@"vertical type=%d,在tempPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
-                return tempPoint;
-            } else {
-                NSLog(@"vertical type=%d,在tempPoint(%d,%d)点落子后形成%d连珠，但是两端不为空点 ",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
+            if([self isVerticalEmergent:verticalPoint Num:num type:type]) {
+                NSLog(@"type=%d,在verticalPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)verticalPoint.x, (int)verticalPoint.y,num);
+                return verticalPoint;
             }
         }
-        // 保存当前最优落子点(右下)
-        tempPoint = [[GobangPoint alloc]initPointWithX:rightDownPoint.x y:rightDownPoint.y];
         // 当前落子点可用
-        if (tempPoint.y < kBoardSize + 2) {
-            while([self checkPoint:rightDownPoint] && ![self isStepEmergent:rightDownPoint Num:num type:type]) {
+        if (rightDownPoint.y < piecesNumber + 2) {
+            while([self checkPoint:rightDownPoint] && ![self isRightDownEmergent:rightDownPoint Num:num type:type]) {
                 rightDownPoint = [self rightDown:[self getNextPoint:rightDownPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
-            if([self isStepEmergent:rightDownPoint Num:num type:type]) {
-                NSLog(@"rightDown type=%d,在tempPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
-                return tempPoint;
-            } else {
-                NSLog(@"rightDown type=%d,在tempPoint(%d,%d)点落子后形成%d连珠，但是两端不为空点 ",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
+            if([self isRightDownEmergent:rightDownPoint Num:num type:type]) {
+                NSLog(@"type=%d,在rightDownPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)rightDownPoint.x, (int)rightDownPoint.y,num);
+                return rightDownPoint;
             }
         }
-        // 保存当前最优落子点(左下)
-        tempPoint = [[GobangPoint alloc]initPointWithX:leftDownPoint.x y:leftDownPoint.y];
         // 当前落子点可用
-        if (tempPoint.y < kBoardSize + 2) {
-            while([self checkPoint:leftDownPoint] && ![self isStepEmergent:leftDownPoint Num:num type:type]) {
+        if (leftDownPoint.y < piecesNumber + 2) {
+            while([self checkPoint:leftDownPoint] && ![self isLeftDownEmergent:leftDownPoint Num:num type:type]) {
                 leftDownPoint = [self leftDown:[self getNextPoint:leftDownPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
-            if([self isStepEmergent:leftDownPoint Num:num type:type]) {
-                NSLog(@"leftDown type=%d,在tempPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
-                return tempPoint;
-            } else {
-                NSLog(@"leftDown type=%d,在tempPoint(%d,%d)点落子后形成%d连珠，但是两端不为空点 ",(int) type,(int)tempPoint.x, (int)tempPoint.y,num);
+            if([self isLeftDownEmergent:leftDownPoint Num:num type:type]) {
+                NSLog(@"type=%d,在leftDownPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)leftDownPoint.x, (int)leftDownPoint.y,num);
+                return leftDownPoint;
             }
         }
     }

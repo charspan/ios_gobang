@@ -39,7 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		943FE6D22445FBB400173520 /* gobangDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gobangDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		943FE6D22445FBB400173520 /* 五子棋大战.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "五子棋大战.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		943FE6D52445FBB400173520 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		943FE6D62445FBB400173520 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		943FE6D82445FBB400173520 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
@@ -103,7 +103,7 @@
 		943FE6D32445FBB400173520 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				943FE6D22445FBB400173520 /* gobangDemo.app */,
+				943FE6D22445FBB400173520 /* 五子棋大战.app */,
 				943FE6ED2445FBB600173520 /* gobangDemoTests.xctest */,
 				943FE6F82445FBB700173520 /* gobangDemoUITests.xctest */,
 			);
@@ -169,7 +169,7 @@
 			);
 			name = gobangDemo;
 			productName = gobangDemo;
-			productReference = 943FE6D22445FBB400173520 /* gobangDemo.app */;
+			productReference = 943FE6D22445FBB400173520 /* 五子棋大战.app */;
 			productType = "com.apple.product-type.application";
 		};
 		943FE6EC2445FBB600173520 /* gobangDemoTests */ = {
@@ -457,16 +457,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98WF2PETE3;
+				CURRENT_PROJECT_VERSION = 1.1;
+				DEVELOPMENT_TEAM = FUKJECALKY;
 				INFOPLIST_FILE = gobangDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.blsmart.gobangDemo.gobangDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.blsmart.blGoBang;
+				PRODUCT_NAME = "五子棋大战";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -474,16 +479,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 98WF2PETE3;
+				CURRENT_PROJECT_VERSION = 1.1;
+				DEVELOPMENT_TEAM = FUKJECALKY;
 				INFOPLIST_FILE = gobangDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.blsmart.gobangDemo.gobangDemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.blsmart.blGoBang;
+				PRODUCT_NAME = "五子棋大战";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

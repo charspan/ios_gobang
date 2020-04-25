@@ -15,7 +15,9 @@ const NSInteger piecesNumber = 14;
 // 边缘
 const NSInteger boderSize = 2;
 // 线的宽度
-const CGFloat lineWidth = 0.5;
+const CGFloat lineWidth = 1.000000;
+// 是否调试
+const BOOL debug = true;
 
 // 这个view负责展示和智能逻辑
 
@@ -33,6 +35,9 @@ const CGFloat lineWidth = 0.5;
 @property (nonatomic, strong) UIView *redDot;
 // 每个小正方形的边长
 @property (nonatomic, assign) float squareLength;
+// 保存用户所有下棋步骤
+@property (nonatomic, strong) NSMutableArray *userSteps;
+
 @end
 
 @implementation GobangView
@@ -63,12 +68,14 @@ const CGFloat lineWidth = 0.5;
         // YES:剪裁超出父视图范围的子视图部分,NO:不剪裁子视图。
         self.redDot.clipsToBounds = NO;
         // 画一组横线和竖线
-        for (int i = 0; i < piecesNumber + boderSize; i ++) {
-            // 显示横线编号
-            UILabel *xLable = [[UILabel alloc]initWithFrame:CGRectMake(-5, i * self.squareLength - 10, self.squareLength, self.squareLength)];
-            xLable.text = [NSString stringWithFormat:@"%d",i];
-            xLable.font = [UIFont systemFontOfSize:12];
-            [self addSubview:xLable];
+        for (int i = 0; i < piecesNumber + boderSize; i++) {
+            if(debug) {
+                // 显示横线编号
+                UILabel *xLable = [[UILabel alloc]initWithFrame:CGRectMake(-5, i * self.squareLength - 10, self.squareLength, self.squareLength)];
+                xLable.text = [NSString stringWithFormat:@"%d",i];
+                xLable.font = [UIFont systemFontOfSize:12];
+                [self addSubview:xLable];
+            }
             
             // 初始化横线，起始坐标为(0, i * self.squareLength)，宽度是当前frame的宽度，高度是lineWidth
             UIView *horizonLine = [[UIView alloc] initWithFrame:CGRectMake(0, i * self.squareLength, frame.size.width, lineWidth)];
@@ -77,11 +84,13 @@ const CGFloat lineWidth = 0.5;
             // 添加到主界面以显示出来
             [self addSubview:horizonLine];
             
-            // 显示竖线编号
-            UILabel *yLable = [[UILabel alloc]initWithFrame:CGRectMake(i * self.squareLength - 5, -10, self.squareLength, self.squareLength)];
-            yLable.text = [NSString stringWithFormat:@"%d",i];
-            yLable.font = [UIFont systemFontOfSize:12];
-            [self addSubview:yLable];
+            if (debug) {
+               // 显示竖线编号
+               UILabel *yLable = [[UILabel alloc]initWithFrame:CGRectMake(i * self.squareLength - 5, -10, self.squareLength, self.squareLength)];
+               yLable.text = [NSString stringWithFormat:@"%d",i];
+               yLable.font = [UIFont systemFontOfSize:12];
+               [self addSubview:yLable];
+            }
             
             // 初始化竖线，起始坐标为(i * self.squareLength, 0)，宽度是lineWidth，高度是当前frame的宽度
             UIView *verticalLine = [[UIView alloc] initWithFrame:CGRectMake(i * self.squareLength, 0, lineWidth, frame.size.width)];
@@ -103,6 +112,7 @@ const CGFloat lineWidth = 0.5;
         self.chesses = [NSMutableArray array];
 //        // 记录五子连珠后对应的五个棋子
 //        self.holders = [NSMutableArray array];
+        self.userSteps = [NSMutableArray array];
     }
     return self;
 }
@@ -129,6 +139,7 @@ const CGFloat lineWidth = 0.5;
     }
     // 初始化用户点击的点
     GobangPoint *clickPoint = [[GobangPoint alloc] initPointWithX:x y:y];
+    [self.userSteps addObject:clickPoint];
     // 判断用户落子是否失败
     if ([self move:clickPoint] == FALSE) {
         // 显示AI获胜
@@ -293,7 +304,6 @@ const CGFloat lineWidth = 0.5;
     [piece addSubview:self.redDot];
     // 记录当前落子view信息
     [self.chesses addObject:piece];
-    
     // 检查棋盘是否已被下满棋子，判断双方谁的连珠数量最多
     
     // 标记下一个下棋的玩家
@@ -328,6 +338,12 @@ const CGFloat lineWidth = 0.5;
     label.textAlignment = NSTextAlignmentCenter;
     // 根据获胜方类型，设置提示信息
     label.text = type == OccupyTypeAI ? @"您输了～嘿嘿嘿" : @"您赢了~真棒！！";
+    // 调试模式打印用户点击历史
+    if (debug) {
+        for (GobangPoint *object in self.userSteps) {
+            NSLog(@"依次点击:（%d,%d)", (int)object.x,(int)object.y);
+        }
+    }
     // 设置提示动画
     // 0.5秒完成显示label，
     [UIView animateWithDuration:0.5 animations:^{
@@ -365,6 +381,8 @@ const CGFloat lineWidth = 0.5;
         }
         [self.places addObject:child];
     }
+    // 移除用户操作步骤记录
+    [self.userSteps removeAllObjects];
 }
 
 @end
