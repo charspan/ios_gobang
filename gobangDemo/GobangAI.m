@@ -456,6 +456,7 @@ static NSInteger piecesNumber = 14;
 
 @implementation GobangAI
 
+// 寻找AI的最优落子点
 + (GobangPoint *)searchBestPoint:(NSMutableArray *)places {
     // 初始化KWOmni
     Robot *robot = [[Robot alloc] initWithArr:places];

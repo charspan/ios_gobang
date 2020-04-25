@@ -17,7 +17,7 @@ const NSInteger boderSize = 2;
 // 线的宽度
 const CGFloat lineWidth = 1.000000;
 // 是否调试
-const BOOL debug = true;
+const BOOL debug = false;
 
 // 这个view负责展示和智能逻辑
 
