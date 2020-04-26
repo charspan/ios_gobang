@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GobangView : UIView
 
+// 定义一个属性字符串
+@property (nonatomic, strong) NSString *x;
+@property (nonatomic, strong) NSString *y;
+
 - (void)reset;
 
 @end

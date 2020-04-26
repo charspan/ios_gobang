@@ -21,13 +21,38 @@ const NSInteger margin = 10;
 @property (nonatomic, strong) GobangView *gobangView;
 // 游戏标题
 @property(nonatomic, strong) UILabel *titleLable;
-
+@property (nonatomic, strong) UITextField *xTF;
+@property (nonatomic, strong) UITextField *yTF;
+// 跳转
+@property(nonatomic, strong) UIButton *btn;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _btn = [[UIButton alloc]initWithFrame:CGRectMake(150, 50, 60, 40)];
+    _btn.backgroundColor =[UIColor redColor];
+    [_btn setTitle:@"传值" forState:UIControlStateNormal];
+    [_btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    _btn.titleLabel.font = [UIFont systemFontOfSize:20];
+    [_btn addTarget:self action:@selector(btnClick) forControlEvents:UIControlEventTouchUpInside];
+    self.xTF = [[UITextField alloc]initWithFrame:CGRectMake(50, 50, 40, 40)];
+    // 文字颜色
+    self.xTF.textColor = [UIColor blackColor];
+    // 边框
+    self.xTF.borderStyle =UITextBorderStyleLine;
+    self.xTF.text =  @"0";
+    
+    self.yTF = [[UITextField alloc]initWithFrame:CGRectMake(100, 50, 40, 40)];
+    // 文字颜色
+    self.yTF.textColor = [UIColor blackColor];
+    // 边框
+    self.yTF.borderStyle =UITextBorderStyleLine;
+    self.yTF.text =  @"0";
+    [self.view addSubview:self.xTF];
+    [self.view addSubview:self.yTF];
+    [self.view addSubview:self.btn];
     // Do any additional setup after loading the view.
 //    UIColor *backgroundColor = [UIColor colorWithRed:230.0 / 255.0 green:192.0 / 255.0 blue:148.0 /255.0 alpha:1.0];
     self.titleLable = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 200 / 2, 50, 200, 100)];
@@ -58,6 +83,11 @@ const NSInteger margin = 10;
     [self.maskView addSubview:self.stopButton];
     [self.stopButton setBackgroundImage:[UIImage imageNamed:@"stop"] forState:UIControlStateNormal];
     [self.stopButton addTarget:self action:@selector(resetButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)btnClick {
+    self.gobangView.x = self.xTF.text;
+    self.gobangView.y = self.yTF.text;
 }
 
 - (void)resetButtonPressed:(UIButton *)button {

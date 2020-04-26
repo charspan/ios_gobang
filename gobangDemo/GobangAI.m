@@ -372,17 +372,29 @@ static NSInteger piecesNumber = 14;
     // 左下可能形成num连珠的点
     GobangPoint *leftDownPoint = [self leftDown:search type:type num:num thre:threshold];
     if (horizontalPoint.y < piecesNumber + 2) {
-        NSLog(@"type=%d,在horizontalPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)horizontalPoint.x, (int)horizontalPoint.y,num);
+        NSLog(@"type=%d,在横向(%d,%d)点落子可以形成%d连珠",(int) type,(int)horizontalPoint.x, (int)horizontalPoint.y,num);
     }
+//    else {
+//        NSLog(@"type=%d,在横向找不到点落子可以形成%d连珠", (int) type, num);
+//    }
     if (verticalPoint.y < piecesNumber + 2) {
-        NSLog(@"type=%d,在verticalPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)verticalPoint.x, (int)verticalPoint.y,num);
+        NSLog(@"type=%d,在纵向(%d,%d)点落子可以形成%d连珠",(int) type,(int)verticalPoint.x, (int)verticalPoint.y,num);
     }
+//    else {
+//        NSLog(@"type=%d,在纵向找不到点落子可以形成%d连珠", (int) type, num);
+//    }
     if (rightDownPoint.y < piecesNumber + 2) {
-        NSLog(@"type=%d,在rightDownPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)rightDownPoint.x, (int)rightDownPoint.y,num);
+        NSLog(@"type=%d,在右下(%d,%d)点落子可以形成%d连珠",(int) type,(int)rightDownPoint.x, (int)rightDownPoint.y,num);
     }
+//    else {
+//        NSLog(@"type=%d,在右下找不到点落子可以形成%d连珠", (int) type, num);
+//    }
     if (leftDownPoint.y < piecesNumber + 2) {
-        NSLog(@"type=%d,在leftDownPoint(%d,%d)点落子可以形成%d连珠",(int) type,(int)leftDownPoint.x, (int)leftDownPoint.y,num);
+        NSLog(@"type=%d,在左下(%d,%d)点落子可以形成%d连珠",(int) type,(int)leftDownPoint.x, (int)leftDownPoint.y,num);
     }
+//    else {
+//        NSLog(@"type=%d,在左下找不到点落子可以形成%d连珠", (int) type, num);
+//    }
     // 是否五子连珠
     if(num == 5) {
         // 横向上找到可形成五子连珠的点
@@ -405,6 +417,7 @@ static NSInteger piecesNumber = 14;
         // 当前落子点可用
         if (horizontalPoint.y < piecesNumber + 2) {
             while([self checkPoint:horizontalPoint] && ![self isHorizontalEmergent:horizontalPoint Num:num type:type]) {
+                NSLog(@"type=%d,在horizontalPoint(%d,%d)点落子可以形成%d连珠，但两端点不为空",(int) type,(int)horizontalPoint.x, (int)horizontalPoint.y,num);
                 horizontalPoint = [self horizontal:[self getNextPoint:horizontalPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
@@ -416,6 +429,7 @@ static NSInteger piecesNumber = 14;
         // 当前落子点可用
         if (verticalPoint.y < piecesNumber + 2) {
             while([self checkPoint:verticalPoint] && ![self isVerticalEmergent:verticalPoint Num:num type:type]) {
+                NSLog(@"type=%d,在verticalPoint(%d,%d)点落子可以形成%d连珠，但两端点不为空",(int) type,(int)verticalPoint.x, (int)verticalPoint.y,num);
                 verticalPoint = [self vertical:[self getNextPoint:verticalPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
@@ -427,6 +441,7 @@ static NSInteger piecesNumber = 14;
         // 当前落子点可用
         if (rightDownPoint.y < piecesNumber + 2) {
             while([self checkPoint:rightDownPoint] && ![self isRightDownEmergent:rightDownPoint Num:num type:type]) {
+                NSLog(@"type=%d,在rightDownPoint(%d,%d)点落子可以形成%d连珠，但两端点不为空",(int) type,(int)rightDownPoint.x, (int)rightDownPoint.y,num);
                 rightDownPoint = [self rightDown:[self getNextPoint:rightDownPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
@@ -438,6 +453,7 @@ static NSInteger piecesNumber = 14;
         // 当前落子点可用
         if (leftDownPoint.y < piecesNumber + 2) {
             while([self checkPoint:leftDownPoint] && ![self isLeftDownEmergent:leftDownPoint Num:num type:type]) {
+                NSLog(@"type=%d,在leftDownPoint(%d,%d)点落子可以形成%d连珠，但两端点不为空",(int) type,(int)leftDownPoint.x, (int)leftDownPoint.y,num);
                 leftDownPoint = [self leftDown:[self getNextPoint:leftDownPoint] type:type num:num thre:threshold];
             }
             // 在找到threshold连续的点并且两侧可以落子后，返回该点
@@ -480,9 +496,38 @@ static NSInteger piecesNumber = 14;
         }
         num--;
     }
-    // 如果什么都没有则返回不可用的点
-    GobangPoint *sad = [[GobangPoint alloc] init];
-    return sad;
+    // 如果没有找到能形成num连珠，且落子后两端都为空的点
+    // 从中间往右下找一个空点返回
+    for (int i = (int)(piecesNumber / 2); i < piecesNumber + 2; i++) {
+        for (int j = (int)(piecesNumber / 2); j < piecesNumber + 2; j++) {
+             if ((int)[places[i][j] integerValue] == OccupyTypeEmpty) {
+                 return [[GobangPoint alloc] initPointWithX:i y:j];
+             }
+        }
+    }
+    // 都没有找到返回一个不可用的点
+    return [[GobangPoint alloc] init];
 }
 
 @end
+
+//2020-04-25 23:35:57.971811+0800 五子棋大战[16163:4135524] 依次点击:（8,6)
+//2020-04-25 23:35:57.971811+0800 五子棋大战[16163:4135524] 依次点击:（7,5)
+//2020-04-25 23:35:57.971871+0800 五子棋大战[16163:4135524] 依次点击:（6,5)
+//2020-04-25 23:35:57.971927+0800 五子棋大战[16163:4135524] 依次点击:（7,3)
+//2020-04-25 23:35:57.971980+0800 五子棋大战[16163:4135524] 依次点击:（5,6)
+//2020-04-25 23:35:57.972036+0800 五子棋大战[16163:4135524] 依次点击:（7,4)
+//2020-04-25 23:35:57.972091+0800 五子棋大战[16163:4135524] 依次点击:（3,4)
+//2020-04-25 23:35:57.972147+0800 五子棋大战[16163:4135524] 依次点击:（6,6)
+//2020-04-25 23:35:57.972205+0800 五子棋大战[16163:4135524] 依次点击:（4,6)
+//2020-04-25 23:35:57.972418+0800 五子棋大战[16163:4135524] 依次点击:（7,2)
+//2020-04-25 23:35:57.972558+0800 五子棋大战[16163:4135524] 依次点击:（5,3)
+//2020-04-25 23:35:57.972825+0800 五子棋大战[16163:4135524] 依次点击:（4,3)
+//2020-04-25 23:35:57.972908+0800 五子棋大战[16163:4135524] 依次点击:（8,1)
+//2020-04-25 23:35:57.973031+0800 五子棋大战[16163:4135524] 依次点击:（6,0)
+//2020-04-25 23:35:57.973156+0800 五子棋大战[16163:4135524] 依次点击:（7,7)
+//2020-04-25 23:35:57.973350+0800 五子棋大战[16163:4135524] 依次点击:（9,5) // 出现 bug 没有拦截三子连珠
+//2020-04-25 23:35:57.973437+0800 五子棋大战[16163:4135524] 依次点击:（10,4)
+//2020-04-25 23:35:57.973655+0800 五子棋大战[16163:4135524] 依次点击:（6,8)
+
+// 发现bug，查找最优点的时候，出现漏掉最优点的现象，从左往右从上到下，找到第一个最优点的时候，发现两端不为空，继续寻找下一个点的时候，会漏掉之前的所以点的排查

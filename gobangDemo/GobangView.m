@@ -17,7 +17,7 @@ const NSInteger boderSize = 2;
 // 线的宽度
 const CGFloat lineWidth = 1.000000;
 // 是否调试
-const BOOL debug = false;
+const BOOL debug = true;
 
 // 这个view负责展示和智能逻辑
 
@@ -29,8 +29,9 @@ const BOOL debug = false;
 @property (nonatomic, strong) NSMutableArray *places;
 // 记录所有在棋盘上的棋子(方便重置游戏时清理棋盘上的棋子显示)
 @property (nonatomic, strong) NSMutableArray *chesses;
-//// 记录五子连珠后对应的五个棋子
-//@property (nonatomic, strong) NSMutableArray *holders;
+// 记录五子连珠后对应的五个棋子
+@property (nonatomic, strong) NSMutableArray *holders;
+@property (nonatomic, strong) NSMutableArray *holdersView;
 // 指示AI最新一步所在的位置
 @property (nonatomic, strong) UIView *redDot;
 // 每个小正方形的边长
@@ -61,7 +62,7 @@ const BOOL debug = false;
         self.backgroundColor = [UIColor colorWithRed:230.0 / 255.0 green:192.0 / 255.0 blue:148.0 /255.0 alpha:1.0];
         // 初始化当前落子点标记
         self.redDot = [[UIView alloc] initWithFrame:CGRectMake(self.squareLength / 8, self.squareLength / 8, self.squareLength / 4, self.squareLength / 4)];
-        // 设备颜色
+        // 设置颜色
         self.redDot.backgroundColor = [UIColor redColor];
         // 设置圆角
         self.redDot.layer.cornerRadius = self.squareLength / 8;
@@ -110,8 +111,10 @@ const BOOL debug = false;
         }
         // 初始化所有在棋盘上的棋子view（为空的NSMutableArray）
         self.chesses = [NSMutableArray array];
-//        // 记录五子连珠后对应的五个棋子
-//        self.holders = [NSMutableArray array];
+        // 记录五子连珠后对应的五个棋子
+        self.holders = [NSMutableArray array];
+        self.holdersView = [NSMutableArray array];
+        // 记录用户落子顺序
         self.userSteps = [NSMutableArray array];
     }
     return self;
@@ -132,6 +135,12 @@ const BOOL debug = false;
     NSUInteger x = (point.x + self.squareLength / 2) / self.squareLength;
     NSUInteger y = (point.y + self.squareLength / 2) / self.squareLength;
     NSLog(@"用户触摸坐标，(%tu, %tu)", x, y);
+    if (self.x != nil) {
+        x = [self.x intValue];
+    }
+    if (self.y != nil) {
+       y = [self.y intValue];
+    }
     // 判断当前点是否为空点（用户点击了已落子的点），点击无效不做处理
     if ([self.places[x][y] integerValue] != OccupyTypeEmpty) {
         self.userInteractionEnabled = YES;
@@ -188,56 +197,89 @@ const BOOL debug = false;
     OccupyType currentType = [self getPointType:point];
     // 先假设能形成5子连珠，获胜
     BOOL victory = TRUE;
+    // 清除5子连珠的信息
+    [self.holders removeAllObjects];
+    // 添加五子连珠起点
+    [self.holders addObject:point];
     // 判断横向是否有5子连珠
     for (int i = 1; i < 5; i++) {
         GobangPoint *nextP = [[GobangPoint alloc]initPointWithX:point.x + i y:point.y];
         // 下一个点不是当前玩家占领，则无法形成5子连珠
         if ([self getPointType:nextP] != currentType) {
+            // 标记没有胜利
             victory = FALSE;
+            // 清除5子连珠的信息
+            [self.holders removeAllObjects];
             break;
         }
+        // 添加五子连珠的点
+        [self.holders addObject:nextP];
     }
     // 存在五子连珠，返回当前点状态
     if (victory) {
         return currentType;
     }
     // 判断纵向是否有5子连珠
+    // 先假设能形成5子连珠，获胜
     victory = TRUE;
+    // 添加五子连珠起点
+    [self.holders addObject:point];
     for (int i = 1; i < 5; i++) {
         GobangPoint *nextP = [[GobangPoint alloc]initPointWithX:point.x y:point.y + i];
         // 下一个点不是当前玩家占领，则无法形成5子连珠
         if ([self getPointType:nextP] != currentType) {
-            victory = false;
+            // 标记没有胜利
+            victory = FALSE;
+            // 清除5子连珠的信息
+            [self.holders removeAllObjects];
             break;
         }
+        // 添加五子连珠的点
+        [self.holders addObject:nextP];
     }
     // 存在五子连珠，返回当前点状态
     if (victory) {
         return currentType;
     }
     // 判断右下是否有5子连珠
+    // 先假设能形成5子连珠，获胜
     victory = TRUE;
+    // 添加五子连珠起点
+    [self.holders addObject:point];
     for (int i = 1; i < 5; i++) {
         GobangPoint *nextP = [[GobangPoint alloc]initPointWithX:point.x + i y:point.y + i];
         // 下一个点不是当前玩家占领，则无法形成5子连珠
         if ([self getPointType:nextP] != currentType) {
-            victory = false;
+            // 标记没有胜利
+            victory = FALSE;
+            // 清除5子连珠的信息
+            [self.holders removeAllObjects];
             break;
         }
+        // 添加五子连珠的点
+        [self.holders addObject:nextP];
     }
     // 存在五子连珠，返回当前点状态
     if (victory) {
         return currentType;
     }
     // 判断左下是否有5子连珠
+    // 先假设能形成5子连珠，获胜
     victory = TRUE;
+    // 添加五子连珠起点
+    [self.holders addObject:point];
     for (int i = 1; i < 5; i++) {
         GobangPoint *nextP = [[GobangPoint alloc]initPointWithX:point.x - i y:point.y + i];
         // 下一个点不是当前玩家占领，则无法形成5子连珠
         if ( [self getPointType:nextP] != currentType) {
-            victory = false;
+            // 标记没有胜利
+            victory = FALSE;
+            // 清除5子连珠的信息
+            [self.holders removeAllObjects];
             break;
         }
+        // 添加五子连珠的点
+        [self.holders addObject:nextP];
     }
     // 存在五子连珠，返回当前点状态
     if (victory) {
@@ -261,6 +303,21 @@ const BOOL debug = false;
                 // 没有形成5子连珠，则继续遍历下一个点
                 continue;
             } else {
+                [self.redDot removeFromSuperview];
+                for (GobangPoint *object in self.holders) {
+                    // 初始化当前落子点标记
+                    UIView *red = [[UIView alloc] initWithFrame:CGRectMake(object.x * self.squareLength - self.squareLength / 8, object.y * self.squareLength - self.squareLength / 8, self.squareLength / 4, self.squareLength / 4)];
+                    // 设置颜色
+                    red.backgroundColor = [UIColor redColor];
+                    // 设置圆角
+                    red.layer.cornerRadius = self.squareLength / 8;
+                    // YES:剪裁超出父视图范围的子视图部分,NO:不剪裁子视图。
+                    red.clipsToBounds = NO;
+                    [self addSubview:red];
+                    [self.holdersView addObject:red];
+                    [self shakeToShow:red];
+                    NSLog(@"五子连珠:（%d,%d)", (int)object.x,(int)object.y);
+                }
                 // 形成了5子连珠，返回胜利方type
                 return winType;
             }
@@ -268,6 +325,19 @@ const BOOL debug = false;
     }
     // 整个棋盘都没有五子连珠，返回空类型
     return OccupyTypeEmpty;
+}
+
+- (void) shakeToShow:(UIView*)view {
+    CAKeyframeAnimation* animation = [CAKeyframeAnimation animationWithKeyPath:@"transform"];
+    animation.duration = 1.5;// 动画时间
+    NSMutableArray *values = [NSMutableArray array];
+    [values addObject:[NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)]];
+    // 这三个数字，我只研究了前两个，所以最后一个数字我还是按照它原来写1.0；前两个是控制view的大小的；
+    [values addObject:[NSValue valueWithCATransform3D:CATransform3DMakeScale(1.5, 1.5, 1.0)]];
+    [values addObject:[NSValue valueWithCATransform3D:CATransform3DMakeScale(0.9, 0.9, 1.0)]];
+    [values addObject:[NSValue valueWithCATransform3D:CATransform3DMakeScale(0.1, 0.1, 1.0)]];
+    animation.values = values;
+    [view.layer addAnimation:animation forKey:nil];
 }
 
 // 在p点落子
@@ -322,7 +392,7 @@ const BOOL debug = false;
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, (self.frame.size.height - labelHeight) / 2, self.frame.size.width, labelHeight)];
     // 设置标签圆角
     label.layer.cornerRadius = labelHeight / 2;
-    // 设备标签边框颜色
+    // 设置标签边框颜色
     label.layer.borderColor = [[UIColor blackColor] CGColor];
     // 设置标签边框宽度
     label.layer.borderWidth = 5;
@@ -351,7 +421,7 @@ const BOOL debug = false;
     } completion:^(BOOL finished) {
         // 标签显示1秒后，0.5秒隐藏标签
         // UIViewAnimationOptionCurveEaseInOut 时间曲线函数，缓入缓出，中间快，其他可选值：https://www.cnblogs.com/xiaobajiu/p/4084747.html
-        [UIView animateWithDuration:0.5 delay:0.5 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:0.5 delay:3 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             label.alpha = 0;
         } completion:^(BOOL finished) {
             // 将提示标签移除
@@ -370,6 +440,12 @@ const BOOL debug = false;
     for (UIView *view in self.chesses) {
         [view removeFromSuperview];
     }
+    // 移除五子连珠棋子view的显示
+    for (UIView *view in self.holdersView) {
+        [view removeFromSuperview];
+    }
+    //  移除五子连珠棋子数据
+    [self.holdersView removeAllObjects];
     // 移除现有棋盘棋子view信息
     [self.chesses removeAllObjects];
     // 重置棋盘位置占用信息，设置棋盘逻辑值，全部为可落子点（空点）
